@@ -1,4 +1,5 @@
 const express = require('express');
+const session = require('express-session')
 const dotenv = require('dotenv');
 const cors =require('cors')
 
@@ -15,6 +16,15 @@ const port = process.env.PORT || 3001
 // Middleware to parse JSON and URL-encoded data
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
+app.use(
+    session({
+      secret: process.env.SECRET,
+      resave: false,
+      saveUninitialized: true,
+      cookie: { secure: false }, // Use true if you have HTTPS
+    })
+  );
 
 app.use(cors({
     origin:'http://localhost:5173',
