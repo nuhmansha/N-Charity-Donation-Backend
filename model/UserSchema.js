@@ -5,6 +5,7 @@ const userSchema = new mongoose.Schema({
   number: { type: String, required: true },
   password: { type: String, required: true },
   isVerified: { type: Boolean, default: false },
+  otp: { type: String },
 });
 const userModel = mongoose.model("user", userSchema);
 module.exports = userModel;

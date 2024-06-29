@@ -31,38 +31,54 @@ module.exports = {
 
       // Send confirmation email
       const otp = Math.floor(100000 + Math.random() * 900000); // Generate a 6-digit OTP
-      await sendMail(email, otp);
-
       req.session.otp = otp;
       req.session.email = email;
+      console.log("Generated OTP:", otp, "for email:", email);
+      console.log("Session after signup:", req.session.otp, req.session.email);
+      await sendMail(email, otp);
 
       res
         .status(201)
-        .json({ msg: "User registered successfully.Otp send to email" });
+        .json({ msg: "User registered successfully. OTP sent to email" });
     } catch (error) {
       console.error(error.message);
       res.status(500).send("Server error");
     }
   },
+
   otpPost: async (req, res) => {
     const { otp } = req.body;
-    const { email, otp: sessionOtp } = req.session;
 
-    if (!email || !sessionOtp) {
-      return res
-        .status(400)
-        .json({ msg: "OTP session expired. Please try again." });
-    }
-    if (otp === sessionOtp) {
-      await User.updateOne({ email }, { isVerified: true });
-      req.session.otp = null;
-      req.session.email = null;
+    try {
+      const sessionEmail = req.session.email;
+      const sessionOtp = req.session.otp;
+      console.log("Received OTP:", otp);
+      console.log("Session:", req.session);
+      console.log("Stored email and OTP:", sessionEmail, sessionOtp);
 
-      res
-        .status(200)
-        .json({ msg: "OTP verified successfully. User is now verified." });
-    } else {
-      res.status(400).json({ msg: "Invalid OTP. Please try again." });
+      if (!sessionEmail || !sessionOtp) {
+        return res
+          .status(400)
+          .json({ msg: "OTP session expired. Please try again." });
+      }
+
+      if (otp === sessionOtp.toString()) {
+        // Update user verification status
+        await User.updateOne({ email: sessionEmail }, { isVerified: true });
+
+        // Clear session variables
+        req.session.otp = null;
+        req.session.email = null;
+
+        res.status(200).json({
+          msg: "OTP verified successfully. User is now verified.",
+        });
+      } else {
+        res.status(400).json({ msg: "Invalid OTP. Please try again." });
+      }
+    } catch (error) {
+      console.error("Error verifying OTP:", error.message);
+      res.status(500).send("Server error");
     }
   },
 };

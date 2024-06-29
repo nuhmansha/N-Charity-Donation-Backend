@@ -5,11 +5,11 @@ const sendMail = async (email, otp) => {
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: process.env.EMAIL,
-        pass: process.env.PASSWORD,
+        user: process.env.EMAIL, // Your email id
+        pass: process.env.PASSWORD, // Your app-specific password
       },
     });
-    //  Email Template
+
     const template = `
     <!DOCTYPE html>
     <html lang="en">
@@ -67,6 +67,7 @@ const sendMail = async (email, otp) => {
     </body>
     </html>
 `;
+
     const mailOption = {
       from: process.env.EMAIL,
       to: email,
@@ -75,9 +76,10 @@ const sendMail = async (email, otp) => {
     };
 
     await transporter.sendMail(mailOption);
-    console.log("mail send successfully");
+    console.log("mail sent successfully");
   } catch (error) {
     console.log(error.message);
   }
 };
+
 module.exports = sendMail;
