@@ -81,4 +81,7 @@ module.exports = {
       res.status(500).send("Server error");
     }
   },
+  loginPost: async (req, res) => { 
+    
+  },
 };
