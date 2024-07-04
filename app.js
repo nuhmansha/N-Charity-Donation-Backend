@@ -7,6 +7,7 @@ dotenv.config();
 
 const dbConnection = require("./config/dbconnection");
 const authRouter = require("./router/authRouter");
+const userRouter = require("./router/userRouter");
 
 const app = express();
 const port = process.env.PORT || 3002;
@@ -34,6 +35,7 @@ app.use(
 );
 
 app.use("/", authRouter);
+app.use("/", userRouter);
 
 // Connect to the database and start the server
 dbConnection()
